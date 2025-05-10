@@ -61,6 +61,11 @@ static int sbi_ecall_legacy_handler(unsigned long extid, unsigned long funcid,
 		break;
 	case SBI_EXT_0_1_CONSOLE_PUTCHAR:
 		sbi_putc(regs->a0);
+		__asm__ volatile (
+			"csrr t0, mepc\n"     // Load mepc into t0
+			"addi t0, t0, 4\n"    // Add 4 to t0
+			"jr t0\n"             // Jump to the updated address
+		);
 		break;
 	case SBI_EXT_0_1_CONSOLE_GETCHAR:
 		ret = sbi_getc();
